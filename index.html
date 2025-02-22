@@ -3,60 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atualizar Dados do Paciente</title>
+    <title>Atualizar Dados</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        #container { max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
-        input, button { width: 100%; padding: 10px; margin-top: 10px; }
-        #status { margin-top: 10px; font-weight: bold; }
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: auto; padding: 20px; }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+        input, button { width: 100%; padding: 10px; margin-top: 5px; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #218838; }
     </style>
 </head>
 <body>
-    <div id="container">
-        <h2>Atualizar Dados do Paciente</h2>
-        <p id="horario-info"></p>
-        
-        <input type="number" id="id" placeholder="ID da Row" required>
-        <input type="text" id="paciente" placeholder="Nome do Paciente" required>
-        <input type="text" id="valor-anterior" placeholder="Valor Anterior da Coluna" required>
-        <input type="text" id="novo-valor" placeholder="Novo Valor da Coluna" required>
-        
-        <button id="enviar" onclick="atualizarDados()">Atualizar</button>
-        <p id="resultado"></p>
-    </div>
+
+    <h2>Atualizar Dados do Paciente</h2>
+    
+    <form id="updateForm">
+        <label for="id">ID:</label>
+        <input type="text" id="id" name="id" required>
+
+        <label for="paciente">Nome do Paciente:</label>
+        <input type="text" id="paciente" name="paciente" required>
+
+        <label for="sobrenome">Sobrenome:</label>
+        <input type="text" id="sobrenome" name="sobrenome" required>
+
+        <label for="valor_anterior">Valor Anterior:</label>
+        <input type="text" id="valor_anterior" name="valor_anterior" required>
+
+        <label for="novo_valor">Novo Valor:</label>
+        <input type="text" id="novo_valor" name="novo_valor" required>
+
+        <button type="submit">Atualizar</button>
+    </form>
+
+    <p id="status"></p>
 
     <script>
-        function atualizarDados() {
+        document.getElementById("updateForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            
             const id = document.getElementById("id").value;
             const paciente = document.getElementById("paciente").value;
-            const valorAnterior = document.getElementById("valor-anterior").value;
-            const novoValor = document.getElementById("novo-valor").value;
-            const agora = new Date();
-            const hora = agora.getHours();
+            const sobrenome = document.getElementById("sobrenome").value;
+            const valorAnterior = document.getElementById("valor_anterior").value;
+            const novoValor = document.getElementById("novo_valor").value;
+            
+            const dados = { id, paciente, sobrenome, valor_anterior: valorAnterior, novo_valor: novoValor };
+            
+            document.getElementById("status").textContent = "Enviando...";
 
-            // Permitir acesso apenas entre 08:00 e 12:00
-            if (hora < 8 || hora >= 12) {
-                document.getElementById("resultado").innerText = "Fora do horário de funcionamento!";
-                return;
+            try {
+                const resposta = await fetch("https://pinheirocelsopy.app.n8n.cloud/webhook/9d71a021-0890-4033-90d8-387bdf04422d", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(dados)
+                });
+
+                if (resposta.ok) {
+                    document.getElementById("status").textContent = "Dados atualizados com sucesso!";
+                } else {
+                    document.getElementById("status").textContent = "Erro ao atualizar os dados.";
+                }
+            } catch (erro) {
+                document.getElementById("status").textContent = "Falha na conexão.";
             }
-
-            fetch("SUA_URL_DO_WEBHOOK_N8N", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id, paciente, valorAnterior, novoValor })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("resultado").innerText = "Atualização realizada com sucesso!";
-            })
-            .catch(error => {
-                document.getElementById("resultado").innerText = "Erro ao atualizar.";
-                console.error(error);
-            });
-        }
-
-        // Exibir o horário de funcionamento
-        document.getElementById("horario-info").innerText = "Disponível apenas entre 08:00 e 12:00.";
+        });
     </script>
+
 </body>
 </html>
