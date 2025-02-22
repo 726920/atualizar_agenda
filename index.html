@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualizar Dados do Paciente</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #container { max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
+        input, button { width: 100%; padding: 10px; margin-top: 10px; }
+        #status { margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h2>Atualizar Dados do Paciente</h2>
+        <p id="horario-info"></p>
+        
+        <input type="number" id="id" placeholder="ID da Row" required>
+        <input type="text" id="paciente" placeholder="Nome do Paciente" required>
+        <input type="text" id="valor-anterior" placeholder="Valor Anterior da Coluna" required>
+        <input type="text" id="novo-valor" placeholder="Novo Valor da Coluna" required>
+        
+        <button id="enviar" onclick="atualizarDados()">Atualizar</button>
+        <p id="resultado"></p>
+    </div>
+
+    <script>
+        function atualizarDados() {
+            const id = document.getElementById("id").value;
+            const paciente = document.getElementById("paciente").value;
+            const valorAnterior = document.getElementById("valor-anterior").value;
+            const novoValor = document.getElementById("novo-valor").value;
+            const agora = new Date();
+            const hora = agora.getHours();
+
+            // Permitir acesso apenas entre 08:00 e 12:00
+            if (hora < 8 || hora >= 12) {
+                document.getElementById("resultado").innerText = "Fora do horário de funcionamento!";
+                return;
+            }
+
+            fetch("SUA_URL_DO_WEBHOOK_N8N", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id, paciente, valorAnterior, novoValor })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("resultado").innerText = "Atualização realizada com sucesso!";
+            })
+            .catch(error => {
+                document.getElementById("resultado").innerText = "Erro ao atualizar.";
+                console.error(error);
+            });
+        }
+
+        // Exibir o horário de funcionamento
+        document.getElementById("horario-info").innerText = "Disponível apenas entre 08:00 e 12:00.";
+    </script>
+</body>
+</html>

@@ -1,2 +1,3 @@
 # atualizar_agenda
-acesso ao agendamento via web (temporario)
+acesso ao agendamento da recepcao via web (temporario)
+
