@@ -14,9 +14,15 @@
 </head>
 <body>
 
-    <h2>Atualizar Datas de Atendimento via Gastroneide</h2>
+    <h2>Atualizar Agendamentos (via Gastroneide)</h2>
     
     <form id="updateForm">
+        <label for="usuario">Usuário:</label>
+        <input type="text" id="usuario" name="usuario" required>
+
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" required>
+
         <label for="id">ID:</label>
         <input type="text" id="id" name="id" required>
 
@@ -26,10 +32,10 @@
         <label for="sobrenome">Sobrenome:</label>
         <input type="text" id="sobrenome" name="sobrenome" required>
 
-        <label for="valor_anterior">Data pre-agendamento:</label>
+        <label for="valor_anterior">Data pré-agendamento:</label>
         <input type="text" id="valor_anterior" name="valor_anterior" required>
 
-        <label for="novo_valor">Data agendamento:</label>
+        <label for="novo_valor">Data Agendamento(recepção):</label>
         <input type="text" id="novo_valor" name="novo_valor" required>
 
         <button type="submit">Atualizar</button>
@@ -41,6 +47,8 @@
         document.getElementById("updateForm").addEventListener("submit", async function(event) {
             event.preventDefault();
             
+            const usuario = document.getElementById("usuario").value;
+            const senha = document.getElementById("senha").value;
             const id = document.getElementById("id").value;
             const paciente = document.getElementById("paciente").value;
             const sobrenome = document.getElementById("sobrenome").value;
@@ -54,7 +62,10 @@
             try {
                 const resposta = await fetch("https://pinheirocelsopy.app.n8n.cloud/webhook/9d71a021-0890-4033-90d8-387bdf04422d", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Basic " + btoa(usuario + ":" + senha)
+                    },
                     body: JSON.stringify(dados)
                 });
 
